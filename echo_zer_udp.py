@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 
 import socket
+import BerogailuLista
 
 PORT = 50001
 
-"""IKASLEAK BETETZEKO:
-Sortu socketa eta esleitu helbide bat.
-"""
+berogailuak = BerogailuLista.BerogailuLista()
+
+#Sortu socketa eta esleitu helbide bat.
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('', PORT))
 
 while True:
-	"""IKASLEAK BETETZEKO:
-	Jaso mezu bat eta erantzun datu berdinekin.
-	"""
+	#Jaso mezu bat eta erantzun datu berdinekin.
 	mezua, bez_helb = s.recvfrom(1024)
+  komandoa = mezua[:3]
+  
 	s.sendto(mezua, bez_helb)
 """IKASLEAK BETETZEKO:
 Itxi socketa.

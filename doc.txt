@@ -1,0 +1,17 @@
+Berogailua:
+  - unsigned int: Id
+  - float: Uneko_Temp
+  - boolean: Itzalita
+
+
+class Berogailua:
+  
+  def __init__(id, tenperatura = 0,piztuta = false):
+    self.__id = id
+    self.__uneko_temp = tenperatura
+    self.__piztuta = piztuta
+
+
+Piztu-Zerrenda eskatu MIKEL
+Itzali-Desio den hozberoa aldatzeko eskaera IÑIGO
+Uneko hozberoaren eskaera-Desio den hozberoaren eskaera PAULA
