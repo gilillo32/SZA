@@ -14,6 +14,9 @@ class Berogailua:
 
   def idBerdinaDu(self, id):
     return id = self.id
+  
+  def unekoHozberoaBueltatu():
+    return self.__uneko_temp
 
 
 
