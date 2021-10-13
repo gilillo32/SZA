@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
 
+import types
+
 class Berogailua:
   
   def __init__(self, id, izena, uneko_tenp = 0, desio_tenp = 0, piztuta = False):
-    self.__id = id
+    try:
+      self.__id = int(id)
+    except ValueError:
+      print("\nID ez-egokia sartu duzu.\n")
     self.__izena = izena
     self.__uneko_temp = uneko_tenp
     self.__desio_temo = desio_tenp
-    self.__piztuta = piztuta
+    if isinstance(piztuta, types.BooleanType):
+      self.__piztuta = piztuta
+    else:
+      print("\nTrue/False idatzi behar da azkeneko parametroa.\n")
 
   def egoeraAldatu(self, egoera):
     self.__piztuta = egoera
