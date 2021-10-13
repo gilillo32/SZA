@@ -9,7 +9,7 @@ berogailuak = BerogailuLista.BerogailuLista()
 
 def NOWkomandoa(berogailuak):
   if not parametroa:
-        #berogailu bakoitzean dagoeen uneko hozberoa
+      #berogailu bakoitzean dagoeen uneko hozberoa
       iterator = berogailuak.__iter__(berogailuak)
       erantzunaren_parte = ""
       while iterator.__next__(berogailuak) != None:
@@ -22,9 +22,9 @@ def NOWkomandoa(berogailuak):
       id = int(parametroa.decode()) 
       berogailua = berogailuak.bilatuId(berogailuak, id)
 
-      if berogailua = None: #id hori duen berogailurik ez da existitzen
+      if berogailua == None: #id hori duen berogailurik ez da existitzen
         errorea = '2' # DUDAA--> ESTO BIEN???
-        erantzuna = errore.encode()
+        erantzuna = errorea.encode()
       else: #existitzen da
         unekoHozberoa = berogailua.unekoHozberoaBueltatu()
         erantzuna = ("+"+"$(unekoHozberoa)").encode()
@@ -32,7 +32,14 @@ def NOWkomandoa(berogailuak):
     except ValueError:
       #kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
       errorea = "-4"
-      erantzuna = errore.encode()
+      erantzuna = errorea.encode()
+
+
+def OFFkomandoa(id_berogailu):
+  #TODO Iñigo
+  berogailua = berogailuak.bilatuId(id_berogailu)
+  berogailua.egoeraAldatu(False)
+
 
 
 
@@ -42,8 +49,8 @@ s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('', PORT))
 
 while True:
-	#Jaso mezu bat eta erantzun datu berdinekin.
-	mezua, bez_helb = s.recvfrom(1024)
+  #Jaso mezu bat eta erantzun datu berdinekin.
+  mezua, bez_helb = s.recvfrom(1024)
 
   #komandoak 3 parametro izango dituzte
   komandoa = mezua[:3]
@@ -57,6 +64,7 @@ while True:
   with switch(komandoa) as k:
 	  if k.case("ONN"):
     if k.case("OFF"):
+      OFFkomandoa(parametroa[##################   DUDA   ###############################################])
     if k.case("NAM"):
     if k.case("NOW"):
       NOWkomandoa(berogailuak)
@@ -68,8 +76,6 @@ while True:
       erantzuna = errore.encode()
   
 	s.sendto(mezua, bez_helb)
-"""IKASLEAK BETETZEKO:
-Itxi socketa.
-"""
+# noinspection PyUnreachableCode
 s.close()
 

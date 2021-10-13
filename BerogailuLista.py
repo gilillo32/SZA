@@ -5,7 +5,7 @@ class BerogailuLista:
   def __init__(self):
     self.pos 
     self.lista = []
-    hasieratuBerogailuak()
+    self.hasieratuBerogailuak()
   
   def bilatuId(self, id):
     for i in self.lista:
