@@ -3,7 +3,7 @@ import Berogailua
 
 class BerogailuLista:
   def __init__(self):
-    self.pos 
+    self.pos
     self.lista = []
     self.hasieratuBerogailuak()
   

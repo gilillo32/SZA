@@ -17,6 +17,3 @@ Itzali-Desio den hozberoa aldatzeko eskaera IÑIGO
 Uneko hozberoaren eskaera-Desio den hozberoaren eskaera PAULA
 
 DUDAS IÑIGO:
-    -OFF varios radiadores
-    -echo_zer_udp.py me da 9 errores
-    -como se guardan los parámetros en la aldagia parametroa
