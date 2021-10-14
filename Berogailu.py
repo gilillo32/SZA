@@ -10,8 +10,8 @@ class Berogailua:
     except ValueError:
       print("\nID ez-egokia sartu duzu.\n")
     self.__izena = izena
-    self.__uneko_temp = uneko_tenp
-    self.__desio_temo = desio_tenp
+    self.__uneko_tenp = uneko_tenp
+    self.__desio_tenp = desio_tenp
     if isinstance(piztuta, types.BooleanType):
       self.__piztuta = piztuta
     else:
@@ -24,7 +24,9 @@ class Berogailua:
     return id = self.id
   
   def unekoHozberoaBueltatu():
-    return self.__uneko_temp
+    return self.__uneko_tenp
 
+   def desioHozberoaBueltatu():
+    return self.__desio_tenp
 
 
