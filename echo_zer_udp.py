@@ -63,10 +63,19 @@ def GETkomandoa():
             erantzuna = errorea.encode()
 
 def OFFkomandoa(id_berogailu):
-    # TODO Iñigo
-    berogailua = berogailuak.bilatuId(id_berogailu)
-    berogailua.egoeraAldatu(False)
-
+    if not id_berogailu:
+        for bg in berogailuak: #TODO getLista()
+            if bg.getEgoera():
+                bg.egoeraAldatu(False)
+        bueltan = '+'
+    else:
+        berogailua = berogailuak.bilatuId(id_berogailu)
+        if berogailua == None:
+            bueltan = '-12'
+        else:
+            berogailua.egoeraAldatu(False)
+            bueltan = '+'
+    return bueltan.encode()
 
 # Sortu socketa eta esleitu helbide bat.
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -88,12 +97,10 @@ while True:
     if komandoa.case("ONN"):
         pass
     elif komandoa.case("OFF"):
-        # OFFkomandoa(parametroa[##################   DUDA   ###############################################])
-        pass
+        erantzuna = OFFkomandoa(parametroa)
     elif komandoa.case("NAM"):
         pass
     elif komandoa.case("NOW"):
-        pass
         NOWkomandoa()
     elif komandoa.case("GET"):
         pass
@@ -105,6 +112,6 @@ while True:
         errorea = "-1"
         erantzuna = errorea.encode()
 
-    s.sendto(mezua, bez_helb)
+    s.sendto(mezua, bez_helb) #Aquí no tendría que ser s.sendto(erantzuna, bez_helb)???
 # noinspection PyUnreachableCode
 s.close()
