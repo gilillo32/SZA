@@ -26,4 +26,5 @@ class BerogailuLista:
       return x
 
   def hasieratuBerogailuak(self):
+    pass
     

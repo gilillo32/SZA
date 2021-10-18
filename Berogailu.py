@@ -21,12 +21,12 @@ class Berogailua:
     self.__piztuta = egoera
 
   def idBerdinaDu(self, id):
-    return id = self.id
+    return id == self.id
   
-  def unekoHozberoaBueltatu():
+  def unekoHozberoaBueltatu(self):
     return self.__uneko_tenp
 
-   def desioHozberoaBueltatu():
+  def desioHozberoaBueltatu(self):
     return self.__desio_tenp
 
 
