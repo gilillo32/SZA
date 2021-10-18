@@ -2,8 +2,6 @@
 
 import socket
 import BerogailuLista
-import komand_proz_funtzioak
-from zerbitzari_errore import ErroreaEskaeran, ErrParamFormatuEzEgoki
 
 PORT = 50001
 EOF = "\n\r"
@@ -107,7 +105,7 @@ def ONNkomandoa(id_berogailu):
                 egoeraEgokia = False
 
     if egoeraEgokia:
-        buelstan = "+"
+        bueltan = "+"
     else:
         bueltan = "-" + str(errorekodea)
     # TODO Kodetu behar da. Formatua ASCII-n egongo da hortaz UTF-8 Formatuan ere
@@ -115,18 +113,18 @@ def ONNkomandoa(id_berogailu):
 
 def NAMkomandoa():
     errorekodea = 13
-    egoeraEgokia = True
+    egoeraegokia = True
 
-    berDeskribLista = []
-    itrBerogailu = berogailuak.getIteradorea()
-    for ber in itrBerogailu:
+    berogdeskriblista = []
+    itrberogailu = berogailuak.getIteradorea()
+    for ber in itrberogailu:
         bIzena = ber.getIzena()
         bID = ber.getId()
-        berDeskrib = str(bIzena) + "," + str(bID)
-        berDeskribLista.append(berDeskrib)
-    bueltan = berDeskribLista.join(":")
+        berDeskrib = str(bID) + "," + str(bIzena)
+        berogdeskriblista.append(berDeskrib)
+    bueltan = berogdeskriblista.join(":")
 
-    if egoeraEgokia:
+    if egoeraegokia:
         bueltan = "+" + bueltan
     else:
         bueltan = "-" + str(errorekodea)
@@ -151,11 +149,11 @@ while True:
 
     # sartutako komando bakoitzeko kasu bat
     if komandoa.case("ONN"):
-       errorea ONNkomandoa(parametroa)
+        erantzuna = ONNkomandoa(parametroa)
     elif komandoa.case("OFF"):
         erantzuna = OFFkomandoa(parametroa)
     elif komandoa.case("NAM"):
-        pass
+        erantzuna = NAMkomandoa()
     elif komandoa.case("NOW"):
         erantzuna = NOWkomandoa()
     elif komandoa.case("GET"):
