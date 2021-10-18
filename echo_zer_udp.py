@@ -9,7 +9,7 @@ PORT = 50001
 EOF = "\n\r"
 
 berogailuak = BerogailuLista.BerogailuLista()
-
+berogailuak.hasieratuBerogailuak()
 
 def NOWkomandoa(berogailuak):
     if not parametroa:
@@ -19,26 +19,50 @@ def NOWkomandoa(berogailuak):
         while iterator.__next__(berogailuak) != None:
             berogailua = berogailuak.bilatuId(berogailuak, id)
             unekoHozberoa = berogailua.unekoHozberoaBueltatu()
-            erantzunaren_parte += "$(unekoHozberoa)" + ":"
-        erantzuna = ("+" + "$(erantzunaren_parte)").encode()
+            erantzunaren_parte += unekoHozberoa + ":"
+        ema = ("+" + erantzunaren_parte)
     else:  # parametroa sartu da
         try:
             id = int(parametroa.decode())
             berogailua = berogailuak.bilatuId(berogailuak, id)
 
             if berogailua == None:  # id hori duen berogailurik ez da existitzen
-                errorea = '2'  # DUDAA--> ESTO BIEN???
-                erantzuna = errorea.encode()
+                ema = '-14' #errorea 14 izango da            
             else:  # existitzen da
                 unekoHozberoa = berogailua.unekoHozberoaBueltatu()
-                erantzuna = ("+" + "$(unekoHozberoa)").encode()
+                ema = ("+" + unekoHozberoa)
 
         except ValueError:
             # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
-            errorea = "-4"
-            erantzuna = errorea.encode()
+            ema = "-4" #errore 4 itzuli
+    return ema
 
+def GETkomandoa():
+    if not parametroa:
+        # berogailu bakoitzean dagoeen uneko hozberoa
+        iterator = berogailuak.__iter__()
+        erantzunaren_parte = ""
+        while iterator.__next__(berogailuak) != None:
+            berogailua = berogailuak.bilatuId(id)
+            desioHozberoa = berogailua.desioHozberoaBueltatu()
+            erantzunaren_parte += desioHozberoa + ":"
+        ema = "+" + erantzunaren_parte
+    else:  # parametroa sartu da
+        try:
+            id = int(parametroa.decode())
+            berogailua = berogailuak.bilatuId(id)
 
+            if berogailua == None:  # id hori duen berogailurik ez da existitzen
+                ema = '-15' 
+            else:  # existitzen da
+                desioHozberoa = berogailua.desioHozberoaBueltatu()
+                ema = "+" + desioHozberoa
+
+        except ValueError:
+            # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
+            ema = "-4"
+    return ema
+            
 def OFFkomandoa(id_berogailu):
     # TODO Iñigo
     berogailua = berogailuak.bilatuId(id_berogailu)
@@ -54,7 +78,7 @@ def OFFkomandoa(id_berogailu):
             bueltan = '-12'
         else:
             berogailua.egoeraAldatu(False)
-    return bueltan.encode()
+    return bueltan
 
 def ONNkomandoa(id_berogailu):
     errorekodea = 11
@@ -123,26 +147,25 @@ while True:
     # parametroak(izatekotan) komandoen atzetik doaz
     parametroa = mezua[3:]
 
-    erantzuna = b''
+    erantzuna = ''
 
     # sartutako komando bakoitzeko kasu bat
     if komandoa.case("ONN"):
-        ONNkomandoa(parametroa)
+       errorea ONNkomandoa(parametroa)
     elif komandoa.case("OFF"):
         erantzuna = OFFkomandoa(parametroa)
     elif komandoa.case("NAM"):
         pass
     elif komandoa.case("NOW"):
-        NOWkomandoa()
+        erantzuna = NOWkomandoa()
     elif komandoa.case("GET"):
-        pass
+        erantzuna = GETkomandoa()
     elif komandoa.case("SET"):
         pass
     else:
         # komando ezezaguna
-        errorea = "-1"
-        erantzuna = errorea.encode()
+        erantzuna = "-1" #errorea
 
-    s.sendto(mezua, bez_helb) #Aquí no tendría que ser s.sendto(erantzuna, bez_helb)???
+    s.sendto(erantzuna.encode(), bez_helb)
 # noinspection PyUnreachableCode
 s.close()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-import Berogailua
+import Berogailu
 
-class BerogailuLista:
+class BerogailuLista(object):
   def __init__(self):
     self.pos
     self.lista = []
@@ -13,23 +13,8 @@ class BerogailuLista:
         return i
     return None
 
-  def gatIteradorea(self):
-    return iter(self.lista);
-
-  def __iter__(self):
-    self.pos = 0
-    return self
-
-  def __next__(self):
-    if self.pos == len(self.lista):
-      return None
-    else:
-      x = self.lista[self.pos]
-      self.pos += 1
-      return x
-
   def hasieratuBerogailuak(self):
-      pass
+      
   
   def egoeraAldatuGuztiei(self, egoera):
     for berogailu in self.lista:
