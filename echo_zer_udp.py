@@ -9,8 +9,9 @@ EOF = "\n\r"
 berogailuak = BerogailuLista.BerogailuLista()
 berogailuak.hasieratuBerogailuak()
 
+
 def NOWkomandoa(berogailuak):
-    if not parametroa:
+    if not parametroak:
         # berogailu bakoitzean dagoeen uneko hozberoa
         iterator = berogailuak.__iter__(berogailuak)
         erantzunaren_parte = ""
@@ -21,22 +22,23 @@ def NOWkomandoa(berogailuak):
         ema = ("+" + erantzunaren_parte)
     else:  # parametroa sartu da
         try:
-            id = int(parametroa.decode())
+            id = int(parametroak.decode())
             berogailua = berogailuak.bilatuId(berogailuak, id)
 
             if berogailua == None:  # id hori duen berogailurik ez da existitzen
-                ema = '-14' #errorea 14 izango da            
+                ema = '-14'  # errorea 14 izango da
             else:  # existitzen da
                 unekoHozberoa = berogailua.unekoHozberoaBueltatu()
                 ema = ("+" + unekoHozberoa)
 
         except ValueError:
             # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
-            ema = "-4" #errore 4 itzuli
+            ema = "-4"  # errore 4 itzuli
     return ema
 
+
 def GETkomandoa():
-    if not parametroa:
+    if not parametroak:
         # berogailu bakoitzean dagoeen uneko hozberoa
         iterator = berogailuak.__iter__()
         erantzunaren_parte = ""
@@ -47,11 +49,11 @@ def GETkomandoa():
         ema = "+" + erantzunaren_parte
     else:  # parametroa sartu da
         try:
-            id = int(parametroa.decode())
+            id = int(parametroak.decode())
             berogailua = berogailuak.bilatuId(id)
 
             if berogailua == None:  # id hori duen berogailurik ez da existitzen
-                ema = '-15' 
+                ema = '-15'
             else:  # existitzen da
                 desioHozberoa = berogailua.desioHozberoaBueltatu()
                 ema = "+" + desioHozberoa
@@ -60,14 +62,15 @@ def GETkomandoa():
             # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
             ema = "-4"
     return ema
-            
+
+
 def OFFkomandoa(id_berogailu):
     # TODO Iñigo
     berogailua = berogailuak.bilatuId(id_berogailu)
     berogailua.egoeraAldatu(False)
     bueltan = '+'
     if not id_berogailu:
-        for bg in berogailuak: #TODO getLista()
+        for bg in berogailuak:  # TODO getLista()
             if bg.getEgoera():
                 bg.egoeraAldatu(False)
     else:
@@ -77,6 +80,7 @@ def OFFkomandoa(id_berogailu):
         else:
             berogailua.egoeraAldatu(False)
     return bueltan
+
 
 def ONNkomandoa(id_berogailu):
     errorekodea = 11
@@ -88,10 +92,10 @@ def ONNkomandoa(id_berogailu):
         try:  # Jaso den parametroa zenbaki bat den frogatu (ID bat izango da eta)
             id_zenb = int(id_berogailu)
         except ValueError:
-            errorekodea = 4 # Formatu errorea: Jasotako parametroa ez da zenbaki bat
+            errorekodea = 4  # Formatu errorea: Jasotako parametroa ez da zenbaki bat
             egoeraEgokia = False
         if egoeraEgokia and id_zenb < 0:
-            errorekodea = 4 # Formatu errorea: Jasotako parametroa negatiboa da
+            errorekodea = 4  # Formatu errorea: Jasotako parametroa negatiboa da
             egoeraEgokia = False
 
         if egoeraEgokia:
@@ -101,7 +105,7 @@ def ONNkomandoa(id_berogailu):
                 unek.egoeraAldatu(True)
             else:
                 # Ezin da eragiketa burutu
-                errorekodea = 11 # Err ONN. Ez dago '{id_zenb}' ID-a duen berogailurik
+                errorekodea = 11  # Err ONN. Ez dago '{id_zenb}' ID-a duen berogailurik
                 egoeraEgokia = False
 
     if egoeraEgokia:
@@ -110,6 +114,7 @@ def ONNkomandoa(id_berogailu):
         bueltan = "-" + str(errorekodea)
     # TODO Kodetu behar da. Formatua ASCII-n egongo da hortaz UTF-8 Formatuan ere
     return bueltan
+
 
 def NAMkomandoa():
     errorekodea = 13
@@ -130,7 +135,25 @@ def NAMkomandoa():
         bueltan = "-" + str(errorekodea)
     return bueltan
 
-    
+
+def SETkomandoa(param):
+    if not param:
+        return '-3'
+    else:
+        tenp = param[:3]
+        bg_id = param[3:]
+        try:
+            tenp = int(tenp)
+        except ValueError:  # Hozberoa zenbaki osoa izan behar da
+            return '-4'
+        if not bg_id:
+            for bg in berogailuak:
+                bg.setDesioTenp(tenp)
+        else:
+            bg = berogailuak.bilatuId(bg_id)
+            bg.setDesioTenp(tenp)
+            # TODO devolver error si no se puede cambiar la tenperatura
+
 # Sortu socketa eta esleitu helbide bat.
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(('', PORT))
@@ -143,15 +166,15 @@ while True:
     komandoa = mezua[:3]
 
     # parametroak(izatekotan) komandoen atzetik doaz
-    parametroa = mezua[3:]
+    parametroak = mezua[3:]
 
     erantzuna = ''
 
     # sartutako komando bakoitzeko kasu bat
     if komandoa.case("ONN"):
-        erantzuna = ONNkomandoa(parametroa)
+        erantzuna = ONNkomandoa(parametroak)
     elif komandoa.case("OFF"):
-        erantzuna = OFFkomandoa(parametroa)
+        erantzuna = OFFkomandoa(parametroak)
     elif komandoa.case("NAM"):
         erantzuna = NAMkomandoa()
     elif komandoa.case("NOW"):
@@ -159,10 +182,10 @@ while True:
     elif komandoa.case("GET"):
         erantzuna = GETkomandoa()
     elif komandoa.case("SET"):
-        pass
+        erantzuna = SETkomandoa(parametroak)
     else:
         # komando ezezaguna
-        erantzuna = "-1" #errorea
+        erantzuna = "-1"  # errorea
 
     s.sendto(erantzuna.encode(), bez_helb)
 # noinspection PyUnreachableCode

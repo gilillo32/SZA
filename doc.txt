@@ -18,5 +18,5 @@ Uneko hozberoaren eskaera-Desio den hozberoaren eskaera PAULA
 
 DUDAS IÑIGO:
 -Quitar iterador
--Línea 116 echo_zer_udp.py
--Singletons
+-Hacer BerogailuLista iterable
+-Cambiar palabra ID

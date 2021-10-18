@@ -38,4 +38,13 @@ class Berogailua:
   def getIzena(self):
     return self.__izena
 
+  def setDesioTenp(self, tenp):
+    self.__desio_tenp = tenp
+    self.tenpLortu()
+
+  def tenpLortu(self):
+    print("\nDesio den hozberora iristen...\n")
+    self.__uneko_tenp = self.__desio_tenp
+    print("\nDesio zen hozberora iritsi da\n")
+
 
