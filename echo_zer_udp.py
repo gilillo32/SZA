@@ -63,18 +63,17 @@ def GETkomandoa():
             erantzuna = errorea.encode()
 
 def OFFkomandoa(id_berogailu):
+    bueltan = '+'
     if not id_berogailu:
         for bg in berogailuak: #TODO getLista()
             if bg.getEgoera():
                 bg.egoeraAldatu(False)
-        bueltan = '+'
     else:
         berogailua = berogailuak.bilatuId(id_berogailu)
         if berogailua == None:
             bueltan = '-12'
         else:
             berogailua.egoeraAldatu(False)
-            bueltan = '+'
     return bueltan.encode()
 
 # Sortu socketa eta esleitu helbide bat.
