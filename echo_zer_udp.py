@@ -8,20 +8,20 @@ PORT = 50001
 berogailuak = BerogailuLista.BerogailuLista()
 
 
-def NOWkomandoa(berogailuak):
+def NOWkomandoa():
     if not parametroa:
         # berogailu bakoitzean dagoeen uneko hozberoa
-        iterator = berogailuak.__iter__(berogailuak)
+        iterator = berogailuak.__iter__()
         erantzunaren_parte = ""
         while iterator.__next__(berogailuak) != None:
-            berogailua = berogailuak.bilatuId(berogailuak, id)
+            berogailua = berogailuak.bilatuId(id)
             unekoHozberoa = berogailua.unekoHozberoaBueltatu()
             erantzunaren_parte += "$(unekoHozberoa)" + ":"
         erantzuna = ("+" + "$(erantzunaren_parte)").encode()
     else:  # parametroa sartu da
         try:
             id = int(parametroa.decode())
-            berogailua = berogailuak.bilatuId(berogailuak, id)
+            berogailua = berogailuak.bilatuId(id)
 
             if berogailua == None:  # id hori duen berogailurik ez da existitzen
                 errorea = '2'  # DUDAA--> ESTO BIEN???
@@ -35,6 +35,32 @@ def NOWkomandoa(berogailuak):
             errorea = "-4"
             erantzuna = errorea.encode()
 
+def GETkomandoa():
+    if not parametroa:
+        # berogailu bakoitzean dagoeen uneko hozberoa
+        iterator = berogailuak.__iter__()
+        erantzunaren_parte = ""
+        while iterator.__next__(berogailuak) != None:
+            berogailua = berogailuak.bilatuId(id)
+            desioHozberoa = berogailua.desioHozberoaBueltatu()
+            erantzunaren_parte += "$(desioHozberoa)" + ":"
+        erantzuna = ("+" + "$(erantzunaren_parte)").encode()
+    else:  # parametroa sartu da
+        try:
+            id = int(parametroa.decode())
+            berogailua = berogailuak.bilatuId(id)
+
+            if berogailua == None:  # id hori duen berogailurik ez da existitzen
+                errorea = '2'  # DUDAA--> ESTO BIEN???
+                erantzuna = errorea.encode()
+            else:  # existitzen da
+                desioHozberoa = berogailua.desioHozberoaBueltatu()
+                erantzuna = ("+" + "$(desioHozberoa)").encode()
+
+        except ValueError:
+            # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
+            errorea = "-4"
+            erantzuna = errorea.encode()
 
 def OFFkomandoa(id_berogailu):
     # TODO Iñigo
@@ -68,9 +94,10 @@ while True:
         pass
     elif komandoa.case("NOW"):
         pass
-        NOWkomandoa(berogailuak)
+        NOWkomandoa()
     elif komandoa.case("GET"):
         pass
+        GETkomandoa()
     elif komandoa.case("SET"):
         pass
     else:
