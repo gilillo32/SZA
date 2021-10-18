@@ -43,6 +43,18 @@ def OFFkomandoa(id_berogailu):
     # TODO Iñigo
     berogailua = berogailuak.bilatuId(id_berogailu)
     berogailua.egoeraAldatu(False)
+    bueltan = '+'
+    if not id_berogailu:
+        for bg in berogailuak: #TODO getLista()
+            if bg.getEgoera():
+                bg.egoeraAldatu(False)
+    else:
+        berogailua = berogailuak.bilatuId(id_berogailu)
+        if berogailua == None:
+            bueltan = '-12'
+        else:
+            berogailua.egoeraAldatu(False)
+    return bueltan.encode()
 
 def ONNkomandoa(id_berogailu):
     errorekodea = 11
@@ -71,15 +83,14 @@ def ONNkomandoa(id_berogailu):
                 egoeraEgokia = False
 
     if egoeraEgokia:
-        erantzuna = "+"
+        buelstan = "+"
     else:
-        erantzuna = "-" + str(errorekodea)
+        bueltan = "-" + str(errorekodea)
     # TODO Kodetu behar da. Formatua ASCII-n egongo da hortaz UTF-8 Formatuan ere
-    return erantzuna
+    return bueltan
 
 def NAMkomandoa():
     errorekodea = 13
-    erantzuna = ""
     egoeraEgokia = True
 
     berDeskribLista = []
@@ -89,14 +100,13 @@ def NAMkomandoa():
         bID = ber.getId()
         berDeskrib = str(bIzena) + "," + str(bID)
         berDeskribLista.append(berDeskrib)
-    erantzuna = berDeskribLista.join(":")
+    bueltan = berDeskribLista.join(":")
 
     if egoeraEgokia:
-        erantzuna = "+" + erantzuna
+        bueltan = "+" + bueltan
     else:
-        erantzuna = "-" + str(errorekodea)
-
-
+        bueltan = "-" + str(errorekodea)
+    return bueltan
 
     
 # Sortu socketa eta esleitu helbide bat.
@@ -119,13 +129,11 @@ while True:
     if komandoa.case("ONN"):
         ONNkomandoa(parametroa)
     elif komandoa.case("OFF"):
-        # OFFkomandoa(parametroa[##################   DUDA   ###############################################])
-        pass
+        erantzuna = OFFkomandoa(parametroa)
     elif komandoa.case("NAM"):
         pass
     elif komandoa.case("NOW"):
-        pass
-        NOWkomandoa(berogailuak)
+        NOWkomandoa()
     elif komandoa.case("GET"):
         pass
     elif komandoa.case("SET"):
@@ -135,6 +143,6 @@ while True:
         errorea = "-1"
         erantzuna = errorea.encode()
 
-    s.sendto(mezua, bez_helb)
+    s.sendto(mezua, bez_helb) #Aquí no tendría que ser s.sendto(erantzuna, bez_helb)???
 # noinspection PyUnreachableCode
 s.close()
