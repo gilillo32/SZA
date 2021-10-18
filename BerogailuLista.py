@@ -13,6 +13,9 @@ class BerogailuLista:
         return i
     return None
 
+  def gatIteradorea(self):
+    return iter(self.lista);
+
   def __iter__(self):
     self.pos = 0
     return self
@@ -26,5 +29,9 @@ class BerogailuLista:
       return x
 
   def hasieratuBerogailuak(self):
-    pass
-    
+      pass
+  
+  def egoeraAldatuGuztiei(self, egoera):
+    for berogailu in self.lista:
+      berogailu.egoeraAldatu(egoera)
+
