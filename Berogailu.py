@@ -12,10 +12,10 @@ class Berogailua:
     self.__izena = izena
     self.__uneko_tenp = uneko_tenp
     self.__desio_tenp = desio_tenp
-    if isinstance(piztuta, types.BooleanType):
-      self.__piztuta = piztuta
-    else:
-      print("\nTrue/False idatzi behar da azkeneko parametroa.\n")
+    #if isinstance(piztuta, types.BooleanType):
+    self.__piztuta = piztuta
+    #else:
+     # print("\nTrue/False idatzi behar da azkeneko parametroa.\n")
 
   def egoeraAldatu(self, egoera):
     self.__piztuta = egoera
@@ -46,5 +46,4 @@ class Berogailua:
     print("\nDesio den hozberora iristen...\n")
     self.__uneko_tenp = self.__desio_tenp
     print("\nDesio zen hozberora iritsi da\n")
-
 

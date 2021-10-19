@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import math
 import socket
 import BerogailuLista
 
@@ -10,41 +10,61 @@ berogailuak = BerogailuLista.BerogailuLista()
 berogailuak.hasieratuBerogailuak()
 
 
-def NOWkomandoa(berogailuak):
-    if not parametroak:
-        # berogailu bakoitzean dagoeen uneko hozberoa
-        iterator = berogailuak.__iter__(berogailuak)
-        erantzunaren_parte = ""
-        while iterator.__next__(berogailuak) != None:
-            berogailua = berogailuak.bilatuId(berogailuak, id)
-            unekoHozberoa = berogailua.unekoHozberoaBueltatu()
-            erantzunaren_parte += unekoHozberoa + ":"
-        ema = ("+" + erantzunaren_parte)
-    else:  # parametroa sartu da
-        try:
-            id = int(parametroak.decode())
-            berogailua = berogailuak.bilatuId(berogailuak, id)
+def NOWkomandoa():
+	if not parametroak:
+        	# berogailu bakoitzean dagoen uneko hozberoa
+	        iterator = berogailuak.getIteradorea()
+        	erantzunaren_parte = ""
+	        for ber in iterator:
+			unekoHozberoa = ber.unekoHozberoaBueltatu()
+			#bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
+			#3 zenbaki atal osoan lortu
+			unekoHozberoa *= 10
+			#atal dezimala lortu
+			unekoHozberoa = int(unekoHozberoa)
+			#ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
+			if len(str(unekoHozberoa)) == 2: #0 gehitu ezkerrean
+			    erantzunaren_parte += str(0)+ str(int(unekoHozberoa)) + ":"
+			elif len(str(unekoHozberoa)) == 1: #00 gehitu ezkerrean
+			    erantzunaren_parte += str(00)+ str(int(unekoHozberoa)) + ":"
+			else:
+			    erantzunaren_parte += str(int(unekoHozberoa)) + ":"
 
-            if berogailua == None:  # id hori duen berogailurik ez da existitzen
-                ema = '-14'  # errorea 14 izango da
-            else:  # existitzen da
-                unekoHozberoa = berogailua.unekoHozberoaBueltatu()
-                ema = ("+" + unekoHozberoa)
+	        ema = ("+" + erantzunaren_parte[0:len(erantzunaren_parte)-1]) #ez dugu bueltatu behar azkenengo karakterea (:)
+	else:  # parametroa sartu da
+		try:
+			id = int(parametroak.decode())
+			berogailua = berogailuak.bilatuId(id)
+			if berogailua == None:  # id hori duen berogailurik ez da existitzen
+		                ema = '-14'  # errorea 14 izango da
+		        else:  # existitzen da
+                		unekoHozberoa = ber.unekoHozberoaBueltatu()
+			        #bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
+  	        		#3 zenbaki atal osoan lortu
+		                unekoHozberoa *= 10
+      				#atal dezimala lortu
+		                unekoHozberoa = int(unekoHozberoa)
+		                #ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
+                		if len(str(unekoHozberoa)) == 2: #0-ak gehitu ezkerrean
+					unekoHozberoa= str(0)+ str(int(unekoHozberoa))
+                		elif len(str(unekoHozberoa) == 1: #00 gehitu ezkerrean
+					unekoHozberoa = str(00)+ str(int(unekoHozberoa))
+                		ema = ( "+" + str(unekoHozberoa))
 
-        except ValueError:
-            # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
-            ema = "-4"  # errore 4 itzuli
-    return ema
+	        except ValueError:
+        	    # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
+	            ema = "-4"  # errore 4 itzuli
+	return ema
 
 
 def GETkomandoa():
     if not parametroak:
         # berogailu bakoitzean dagoeen uneko hozberoa
-        iterator = berogailuak.__iter__()
+        iterator = berogailuak.getIteradorea()
         erantzunaren_parte = ""
-        while iterator.__next__(berogailuak) != None:
-            berogailua = berogailuak.bilatuId(id)
-            desioHozberoa = berogailua.desioHozberoaBueltatu()
+        for ber in iterator:
+            berogailua = ber.bilatuId(id)
+            desioHozberoa = ber.desioHozberoaBueltatu()
             erantzunaren_parte += desioHozberoa + ":"
         ema = "+" + erantzunaren_parte
     else:  # parametroa sartu da
@@ -161,32 +181,33 @@ s.bind(('', PORT))
 while True:
     # Jaso mezu bat eta erantzun datu berdinekin.
     mezua, bez_helb = s.recvfrom(1024)
-
+    mezua = mezua.decode()
     # komandoak 3 parametro izango dituzte
     komandoa = mezua[:3]
-
+    print(komandoa)
     # parametroak(izatekotan) komandoen atzetik doaz
     parametroak = mezua[3:]
-
+    print(parametroak)
     erantzuna = ''
 
     # sartutako komando bakoitzeko kasu bat
-    if komandoa.case("ONN"):
+    if komandoa == "ONN":
         erantzuna = ONNkomandoa(parametroak)
-    elif komandoa.case("OFF"):
+    elif komandoa == "OFF":
         erantzuna = OFFkomandoa(parametroak)
-    elif komandoa.case("NAM"):
+    elif komandoa == "NAM":
         erantzuna = NAMkomandoa()
-    elif komandoa.case("NOW"):
+    elif komandoa == "NOW":
         erantzuna = NOWkomandoa()
-    elif komandoa.case("GET"):
+    elif komandoa == "GET":
         erantzuna = GETkomandoa()
-    elif komandoa.case("SET"):
+    elif komandoa =="SET":
         erantzuna = SETkomandoa(parametroak)
     else:
         # komando ezezaguna
         erantzuna = "-1"  # errorea
 
+    print(erantzuna)
     s.sendto(erantzuna.encode(), bez_helb)
 # noinspection PyUnreachableCode
 s.close()
