@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import Berogailu
-
+import random
 
 class BerogailuLista(object):
 
@@ -25,4 +25,9 @@ class BerogailuLista(object):
     def hasieratuBerogailuak(self):
         berogailuKop = 10
         for i in range(1, berogailuKop + 1):
-            self.lista.append(Berogailu.Berogailua(i, f"Gela {i}"))
+          #hasieratu piztuta edo itzalita egotea, uneko tenperatura eta desio tenperatura ausaz
+            unekoTenp = random.uniform(-20.0, 30.0)
+            desioTenp = random.uniform(-20.0, 30.0)
+            piztuta = random.choice([True, False])
+            self.lista.append(Berogailu.Berogailua(i, f"Gela {i}",unekoTenp,desioTenp,piztuta))
+            
