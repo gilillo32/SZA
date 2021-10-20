@@ -4,57 +4,58 @@ import socket
 import BerogailuLista
 
 PORT = 50001
-EOF = "\n\r"
+MAX_BYTES_DATAGRAM = 1500
 
 berogailuak = BerogailuLista.BerogailuLista()
 berogailuak.hasieratuBerogailuak()
 
 
 def NOWkomandoa():
-	if not parametroak:
-        	# berogailu bakoitzean dagoen uneko hozberoa
-	        iterator = berogailuak.getIteradorea()
-        	erantzunaren_parte = ""
-	        for ber in iterator:
-			unekoHozberoa = ber.unekoHozberoaBueltatu()
-			#bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
-			#3 zenbaki atal osoan lortu
-			unekoHozberoa *= 10
-			#atal dezimala lortu
-			unekoHozberoa = int(unekoHozberoa)
-			#ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
-			if len(str(unekoHozberoa)) == 2: #0 gehitu ezkerrean
-			    erantzunaren_parte += str(0)+ str(int(unekoHozberoa)) + ":"
-			elif len(str(unekoHozberoa)) == 1: #00 gehitu ezkerrean
-			    erantzunaren_parte += str(00)+ str(int(unekoHozberoa)) + ":"
-			else:
-			    erantzunaren_parte += str(int(unekoHozberoa)) + ":"
+    if not parametroak:
+        # berogailu bakoitzean dagoen uneko hozberoa
+        iterator = berogailuak.getIteradorea()
+        erantzunaren_parte = ""
+        for ber in iterator:
+            unekoHozberoa = ber.unekoHozberoaBueltatu()
+            # bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
+            # 3 zenbaki atal osoan lortu
+            unekoHozberoa *= 10
+            # atal dezimala lortu
+            unekoHozberoa = int(unekoHozberoa)
+            # ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
+            if len(str(unekoHozberoa)) == 2:  # 0 gehitu ezkerrean
+                erantzunaren_parte += str(0) + str(int(unekoHozberoa)) + ":"
+            elif len(str(unekoHozberoa)) == 1:  # 00 gehitu ezkerrean
+                erantzunaren_parte += str(00) + str(int(unekoHozberoa)) + ":"
+            else:
+                erantzunaren_parte += str(int(unekoHozberoa)) + ":"
 
-	        ema = ("+" + erantzunaren_parte[0:len(erantzunaren_parte)-1]) #ez dugu bueltatu behar azkenengo karakterea (:)
-	else:  # parametroa sartu da
-		try:
-			id = int(parametroak.decode())
-			berogailua = berogailuak.bilatuId(id)
-			if berogailua == None:  # id hori duen berogailurik ez da existitzen
-		                ema = '-14'  # errorea 14 izango da
-		        else:  # existitzen da
-                		unekoHozberoa = ber.unekoHozberoaBueltatu()
-			        #bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
-  	        		#3 zenbaki atal osoan lortu
-		                unekoHozberoa *= 10
-      				#atal dezimala lortu
-		                unekoHozberoa = int(unekoHozberoa)
-		                #ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
-                		if len(str(unekoHozberoa)) == 2: #0-ak gehitu ezkerrean
-					unekoHozberoa= str(0)+ str(int(unekoHozberoa))
-                		elif len(str(unekoHozberoa) == 1: #00 gehitu ezkerrean
-					unekoHozberoa = str(00)+ str(int(unekoHozberoa))
-                		ema = ( "+" + str(unekoHozberoa))
+        ema = ("+" + erantzunaren_parte[
+                     0:len(erantzunaren_parte) - 1])  # ez dugu bueltatu behar azkenengo karakterea (:)
+    else:  # parametroa sartu da
+        try:
+            id = int(parametroak.decode())
+            berogailua = berogailuak.bilatuId(id)
+            if berogailua == None:  # id hori duen berogailurik ez da existitzen
+                ema = '-14'  # errorea 14 izango da
+            else:  # existitzen da
+                unekoHozberoa = berogailua.unekoHozberoaBueltatu()
+                # bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
+                # 3 zenbaki atal osoan lortu
+                unekoHozberoa *= 10
+                # atal dezimala lortu
+                unekoHozberoa = int(unekoHozberoa)
+                # ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
+                if len(str(unekoHozberoa)) == 2:  # 0-ak gehitu ezkerrean
+                    unekoHozberoa = str(0) + str(int(unekoHozberoa))
+                elif len(str(unekoHozberoa)) == 1:  # 00 gehitu ezkerrean
+                    unekoHozberoa = str(00) + str(int(unekoHozberoa))
+                ema = ("+" + str(unekoHozberoa))
 
-	        except ValueError:
-        	    # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
-	            ema = "-4"  # errore 4 itzuli
-	return ema
+        except ValueError:
+            # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
+            ema = "-4"  # errore 4 itzuli
+    return ema
 
 
 def GETkomandoa():
@@ -114,7 +115,7 @@ def ONNkomandoa(id_berogailu):
         except ValueError:
             errorekodea = 4  # Formatu errorea: Jasotako parametroa ez da zenbaki bat
             egoeraEgokia = False
-        if egoeraEgokia and id_zenb < 0:
+        if egoeraEgokia and id_zenb < 0: # Jasotako zenbakia ez da negatiboa ezta 0
             errorekodea = 4  # Formatu errorea: Jasotako parametroa negatiboa da
             egoeraEgokia = False
 
@@ -132,25 +133,40 @@ def ONNkomandoa(id_berogailu):
         bueltan = "+"
     else:
         bueltan = "-" + str(errorekodea)
-    # TODO Kodetu behar da. Formatua ASCII-n egongo da hortaz UTF-8 Formatuan ere
     return bueltan
 
 
 def NAMkomandoa():
+
     errorekodea = 13
     egoeraegokia = True
 
     berogdeskriblista = []
     itrberogailu = berogailuak.getIteradorea()
-    for ber in itrberogailu:
-        bIzena = ber.getIzena()
-        bID = ber.getId()
-        berDeskrib = str(bID) + "," + str(bIzena)
-        berogdeskriblista.append(berDeskrib)
-    bueltan = berogdeskriblista.join(":")
+    try:
+        for ber in itrberogailu:
+            bIzena = ber.getIzena()
+            bID = ber.getID()
+            berDeskrib = str(bID) + "," + str(bIzena)
+            berogdeskriblista.append(berDeskrib)
+        bueltan = ":".join(berogdeskriblista)
+    except Exception:
+        egoeraegokia = False
 
     if egoeraegokia:
         bueltan = "+" + bueltan
+
+        if len(bueltan.encode()) > MAX_BYTES_DATAGRAM:
+            # DATAGRAMA BYTE LUZEERA MAXIMOA GAINDITU DA: {MAX_BYTES_DATAGRAM}
+            # Mezuaren luzeera txikituko da inofrmazioa borratuz
+            bueltanBytes = bytearray(
+                bueltan.encode())  # byteko lehenengo MAX_BYTES_DATAGRAM kopurua lortzeko byte array bat sortu
+            bueltanBytes = bueltanBytes[
+                           :MAX_BYTES_DATAGRAM]  # bytearrayko lehenengo MAX_BYTES_DATAGRAM elementuak lortu
+            bueltan = bueltanBytes.decode("utf-8",
+                                          "ignore")  # saiatu zatituko mezua dekodetzen eta byte-ren bat ezin bada dekodetu (zatiketak karaktere baten definizioa zatitu du) byte hori ignoratu
+            bueltan = bueltan.rsplit(':', 1)[0]  # azkenengo ":" karakterearen ondoren dagoen informazioa baztertu
+
     else:
         bueltan = "-" + str(errorekodea)
     return bueltan
@@ -173,6 +189,7 @@ def SETkomandoa(param):
             bg = berogailuak.bilatuId(bg_id)
             bg.setDesioTenp(tenp)
             # TODO devolver error si no se puede cambiar la tenperatura
+
 
 # Sortu socketa eta esleitu helbide bat.
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -201,7 +218,7 @@ while True:
         erantzuna = NOWkomandoa()
     elif komandoa == "GET":
         erantzuna = GETkomandoa()
-    elif komandoa =="SET":
+    elif komandoa == "SET":
         erantzuna = SETkomandoa(parametroak)
     else:
         # komando ezezaguna

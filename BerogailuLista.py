@@ -5,7 +5,6 @@ import random
 class BerogailuLista(object):
 
     def __init__(self):
-        self.pos
         self.lista = []
         self.hasieratuBerogailuak()
 
@@ -29,5 +28,6 @@ class BerogailuLista(object):
             unekoTenp = random.uniform(-20.0, 30.0)
             desioTenp = random.uniform(-20.0, 30.0)
             piztuta = random.choice([True, False])
-            self.lista.append(Berogailu.Berogailua(i, f"Gela {i}",unekoTenp,desioTenp,piztuta))
+            berog = Berogailu.Berogailua(random.randint(0, 100000), f"Gela {i}", unekoTenp, desioTenp, piztuta)
+            self.lista.append(berog)
             

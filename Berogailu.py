@@ -33,7 +33,7 @@ class Berogailua:
     return self.__desio_tenp
 
   def getID(self):
-    return  self.__id
+    return self.__id
 
   def getIzena(self):
     return self.__izena
