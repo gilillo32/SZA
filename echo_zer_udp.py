@@ -86,12 +86,11 @@ def GETkomandoa():
 
 
 def OFFkomandoa(id_berogailu):
-    # TODO Iñigo
     berogailua = berogailuak.bilatuId(id_berogailu)
     berogailua.egoeraAldatu(False)
     bueltan = '+'
     if not id_berogailu:
-        for bg in berogailuak:  # TODO getLista()
+        for bg in berogailuak:
             if bg.getEgoera():
                 bg.egoeraAldatu(False)
     else:
@@ -115,7 +114,7 @@ def ONNkomandoa(id_berogailu):
         except ValueError:
             errorekodea = 4  # Formatu errorea: Jasotako parametroa ez da zenbaki bat
             egoeraEgokia = False
-        if egoeraEgokia and id_zenb < 0: # Jasotako zenbakia ez da negatiboa ezta 0
+        if egoeraEgokia and id_zenb < 0:  # Jasotako zenbakia ez da negatiboa ezta 0
             errorekodea = 4  # Formatu errorea: Jasotako parametroa negatiboa da
             egoeraEgokia = False
 
@@ -137,7 +136,6 @@ def ONNkomandoa(id_berogailu):
 
 
 def NAMkomandoa():
-
     errorekodea = 13
     egoeraegokia = True
 
@@ -178,17 +176,19 @@ def SETkomandoa(param):
     else:
         tenp = param[:3]
         bg_id = param[3:]
+        egoeraEgokia = True
         try:
             tenp = int(tenp)
         except ValueError:  # Hozberoa zenbaki osoa izan behar da
             return '-4'
         if not bg_id:
-            for bg in berogailuak:
+            for bg in berogailuak.getIteradorea():
                 bg.setDesioTenp(tenp)
         else:
             bg = berogailuak.bilatuId(bg_id)
             bg.setDesioTenp(tenp)
-            # TODO devolver error si no se puede cambiar la tenperatura
+        if not egoeraEgokia:
+            return '-16'
 
 
 # Sortu socketa eta esleitu helbide bat.
