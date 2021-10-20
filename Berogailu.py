@@ -4,7 +4,7 @@ import types
 
 class Berogailua:
   
-  def __init__(self, id, izena, uneko_tenp = 0, desio_tenp = 0, piztuta = False):
+  def __init__(self, id, izena, uneko_tenp = 0.0, desio_tenp = 0.0, piztuta = False):
     try:
       self.__id = int(id)
     except ValueError:
@@ -24,7 +24,7 @@ class Berogailua:
     return self.__piztuta
 
   def idBerdinaDu(self, id):
-    return id == self.id
+    return id == self.__id
 
   def unekoHozberoaBueltatu(self):
     return self.__uneko_tenp
