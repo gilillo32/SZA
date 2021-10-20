@@ -7,81 +7,66 @@ PORT = 50001
 MAX_BYTES_DATAGRAM = 1500
 
 berogailuak = BerogailuLista.BerogailuLista()
-berogailuak.hasieratuBerogailuak()
 
 
-def NOWkomandoa():
+def NOWGETkomandoa(aukera):
+    """
+    NOW eta GET komandoekin egiten dena berdina da, baina batek uneko tenperaturarekin
+    egiten du eta besteak desio tenperaturarekin. Beraz, metodo orokor bat egingo dugu
+    zeinak sartzen duzun aukeraren(NOW edo GET) arabera desio edo uneko tenperatura
+    itzultzen duen.
+    """
     if not parametroak:
-        # berogailu bakoitzean dagoen uneko hozberoa
+        #berogailu bakoitzean dagoen uneko hozberoa
         iterator = berogailuak.getIteradorea()
         erantzunaren_parte = ""
         for ber in iterator:
-            unekoHozberoa = ber.unekoHozberoaBueltatu()
-            # bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
-            # 3 zenbaki atal osoan lortu
-            unekoHozberoa *= 10
-            # atal dezimala lortu
-            unekoHozberoa = int(unekoHozberoa)
-            # ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
-            if len(str(unekoHozberoa)) == 2:  # 0 gehitu ezkerrean
-                erantzunaren_parte += str(0) + str(int(unekoHozberoa)) + ":"
-            elif len(str(unekoHozberoa)) == 1:  # 00 gehitu ezkerrean
-                erantzunaren_parte += str(00) + str(int(unekoHozberoa)) + ":"
-            else:
-                erantzunaren_parte += str(int(unekoHozberoa)) + ":"
+            if aukera == "NOW": #uneko hozberoa nahi dugu
+                tenperatura = ber.unekoHozberoaBueltatu()
+            elif aukera == "GET": #desio hozberoa nahi dugu
+                tenperatura = ber.desioHozberoaBueltatu()
+                
+            #bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
+            #3 zenbaki atal osoan lortu
+            tenperatura *= 10
+            #atal dezimala lortu
+            tenperatura = int(tenperatura)
+            #ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
+            if len(str(tenperatura)) == 2: #0 gehitu ezkerrean
+                erantzunaren_parte += "0"+ str(int(tenperatura)) + ":"
+            elif len(str(tenperatura)) == 1: #00 gehitu ezkerrean
+                erantzunaren_parte += "00"+ str(int(tenperatura)) + ":"
+            else:                
+                erantzunaren_parte += str(int(tenperatura)) + ":"
 
-        ema = ("+" + erantzunaren_parte[
-                     0:len(erantzunaren_parte) - 1])  # ez dugu bueltatu behar azkenengo karakterea (:)
+        ema = ("+" + erantzunaren_parte[0:len(erantzunaren_parte)-1]) #ez dugu bueltatu behar azkenengo karakterea (:)
     else:  # parametroa sartu da
         try:
-            id = int(parametroak.decode())
-            berogailua = berogailuak.bilatuId(id)
+            #parametroa id-a dago
+            berogailua = berogailuak.bilatuId(int(parametroak))
             if berogailua == None:  # id hori duen berogailurik ez da existitzen
                 ema = '-14'  # errorea 14 izango da
-            else:  # existitzen da
-                unekoHozberoa = berogailua.unekoHozberoaBueltatu()
-                # bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
-                # 3 zenbaki atal osoan lortu
-                unekoHozberoa *= 10
-                # atal dezimala lortu
-                unekoHozberoa = int(unekoHozberoa)
-                # ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
-                if len(str(unekoHozberoa)) == 2:  # 0-ak gehitu ezkerrean
-                    unekoHozberoa = str(0) + str(int(unekoHozberoa))
-                elif len(str(unekoHozberoa)) == 1:  # 00 gehitu ezkerrean
-                    unekoHozberoa = str(00) + str(int(unekoHozberoa))
-                ema = ("+" + str(unekoHozberoa))
+            else: # existitzen da
+                if aukera == "NOW": #uneko hozberoa nahi dugu
+                    tenperatura = berogailua.unekoHozberoaBueltatu()
+                elif aukera == "GET": #desio hozberoa nahi dugu
+                    tenperatura = berogailua.desioHozberoaBueltatu()
+                
+				#bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
+				#3 zenbaki atal osoan lortu
+                tenperatura *= 10
+				#atal dezimala lortu
+                tenperatura = int(tenperatura)
+				#ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
+                if len(str(tenperatura)) == 2: #0 gehitu ezkerrean
+                    tenperatura = "0" + str(int(tenperatura))
+                elif len(str(tenperatura)) == 1: #00 gehitu ezkerrean
+                    tenperatura = "00"+ str(int(tenperatura))
+                ema = ("+" + str(tenperatura))
 
         except ValueError:
-            # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
+			# kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
             ema = "-4"  # errore 4 itzuli
-    return ema
-
-
-def GETkomandoa():
-    if not parametroak:
-        # berogailu bakoitzean dagoeen uneko hozberoa
-        iterator = berogailuak.getIteradorea()
-        erantzunaren_parte = ""
-        for ber in iterator:
-            berogailua = ber.bilatuId(id)
-            desioHozberoa = ber.desioHozberoaBueltatu()
-            erantzunaren_parte += desioHozberoa + ":"
-        ema = "+" + erantzunaren_parte
-    else:  # parametroa sartu da
-        try:
-            id = int(parametroak.decode())
-            berogailua = berogailuak.bilatuId(id)
-
-            if berogailua == None:  # id hori duen berogailurik ez da existitzen
-                ema = '-15'
-            else:  # existitzen da
-                desioHozberoa = berogailua.desioHozberoaBueltatu()
-                ema = "+" + desioHozberoa
-
-        except ValueError:
-            # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
-            ema = "-4"
     return ema
 
 
@@ -215,9 +200,9 @@ while True:
     elif komandoa == "NAM":
         erantzuna = NAMkomandoa()
     elif komandoa == "NOW":
-        erantzuna = NOWkomandoa()
-    elif komandoa == "GET":
-        erantzuna = GETkomandoa()
+		erantzuna = NOWGETkomandoa("NOW")
+	elif komandoa == "GET":
+		erantzuna = NOWGETkomandoa("GET")
     elif komandoa == "SET":
         erantzuna = SETkomandoa(parametroak)
     else:
