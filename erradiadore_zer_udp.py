@@ -98,11 +98,10 @@ def ONNkomandoa(id_berogailu):
     else:
         try:  # Jaso den parametroa zenbaki bat den frogatu (ID bat izango da eta)
             id_zenb = int(id_berogailu)
+            if egoeraEgokia and id_zenb < 0:  # Jasotako zenbakia ez da negatiboa ezta 0
+                raise ValueError()
         except ValueError:
             errorekodea = 4  # Formatu errorea: Jasotako parametroa ez da zenbaki bat
-            egoeraEgokia = False
-        if egoeraEgokia and id_zenb < 0:  # Jasotako zenbakia ez da negatiboa ezta 0
-            errorekodea = 4  # Formatu errorea: Jasotako parametroa negatiboa da
             egoeraEgokia = False
 
         if egoeraEgokia:
