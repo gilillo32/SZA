@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import math
 import socket
 import BerogailuLista
 
@@ -17,55 +16,58 @@ def NOWGETkomandoa(aukera):
     itzultzen duen.
     """
     if not parametroak:
-        #berogailu bakoitzean dagoen uneko hozberoa
+        # berogailu bakoitzean dagoen uneko hozberoa
         iterator = berogailuak.getIteradorea()
         erantzunaren_parte = ""
         for ber in iterator:
-            if aukera == "NOW": #uneko hozberoa nahi dugu
+            tenperatura = 0
+            if aukera == "NOW":  # uneko hozberoa nahi dugu
                 tenperatura = ber.unekoHozberoaBueltatu()
-            elif aukera == "GET": #desio hozberoa nahi dugu
+            elif aukera == "GET":  # desio hozberoa nahi dugu
                 tenperatura = ber.desioHozberoaBueltatu()
-                
-            #bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
-            #3 zenbaki atal osoan lortu
+
+            # bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10
+            # bada 0 gehitu aurrean 3 zenbaki atal osoan lortu
             tenperatura *= 10
-            #atal dezimala lortu
+            # atal dezimala lortu
             tenperatura = int(tenperatura)
-            #ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
-            if len(str(tenperatura)) == 2: #0 gehitu ezkerrean
-                erantzunaren_parte += "0"+ str(int(tenperatura)) + ":"
-            elif len(str(tenperatura)) == 1: #00 gehitu ezkerrean
-                erantzunaren_parte += "00"+ str(int(tenperatura)) + ":"
-            else:                
+            # ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
+            if len(str(tenperatura)) == 2:  # 0 gehitu ezkerrean
+                erantzunaren_parte += "0" + str(int(tenperatura)) + ":"
+            elif len(str(tenperatura)) == 1:  # 00 gehitu ezkerrean
+                erantzunaren_parte += "00" + str(int(tenperatura)) + ":"
+            else:
                 erantzunaren_parte += str(int(tenperatura)) + ":"
 
-        ema = ("+" + erantzunaren_parte[0:len(erantzunaren_parte)-1]) #ez dugu bueltatu behar azkenengo karakterea (:)
+        ema = ("+" + erantzunaren_parte[
+                     0:len(erantzunaren_parte) - 1])  # ez dugu bueltatu behar azkenengo karakterea (:)
     else:  # parametroa sartu da
         try:
-            #parametroa id-a dago
+            # parametroa id-a dago
             berogailua = berogailuak.bilatuId(int(parametroak))
-            if berogailua == None:  # id hori duen berogailurik ez da existitzen
+            if berogailua is None:  # id hori duen berogailurik ez da existitzen
                 ema = '-14'  # errorea 14 izango da
-            else: # existitzen da
-                if aukera == "NOW": #uneko hozberoa nahi dugu
+            else:  # existitzen da
+                tenperatura = 0
+                if aukera == "NOW":  # uneko hozberoa nahi dugu
                     tenperatura = berogailua.unekoHozberoaBueltatu()
-                elif aukera == "GET": #desio hozberoa nahi dugu
+                elif aukera == "GET":  # desio hozberoa nahi dugu
                     tenperatura = berogailua.desioHozberoaBueltatu()
-                
-				#bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta tenperatua<10 bada 0 gehitu aurrean
-				#3 zenbaki atal osoan lortu
+
+                # bakarrik nahi dugu atal osoa eta gainera 3 zifrako zenbakia izango da koma kenduta eta
+                # tenperatua<10 bada 0 gehitu aurrean 3 zenbaki atal osoan lortu
                 tenperatura *= 10
-				#atal dezimala lortu
+                # atal dezimala lortu
                 tenperatura = int(tenperatura)
-				#ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
-                if len(str(tenperatura)) == 2: #0 gehitu ezkerrean
+                # ikusi ea 3 zifrako zenbakia den, bestela 0 gehitu aurrean
+                if len(str(tenperatura)) == 2:  # 0 gehitu ezkerrean
                     tenperatura = "0" + str(int(tenperatura))
-                elif len(str(tenperatura)) == 1: #00 gehitu ezkerrean
-                    tenperatura = "00"+ str(int(tenperatura))
+                elif len(str(tenperatura)) == 1:  # 00 gehitu ezkerrean
+                    tenperatura = "00" + str(int(tenperatura))
                 ema = ("+" + str(tenperatura))
 
         except ValueError:
-			# kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
+            # kasting-a ezin bada egin string bat delako--> parametroak ez du forma egokia
             ema = "-4"  # errore 4 itzuli
     return ema
 
@@ -75,12 +77,12 @@ def OFFkomandoa(id_berogailu):
     berogailua.egoeraAldatu(False)
     bueltan = '+'
     if not id_berogailu:
-        for bg in berogailuak:
+        for bg in berogailuak.getIteradorea():
             if bg.getEgoera():
                 bg.egoeraAldatu(False)
     else:
         berogailua = berogailuak.bilatuId(id_berogailu)
-        if berogailua == None:
+        if berogailua is None:
             bueltan = '-12'
         else:
             berogailua.egoeraAldatu(False)
@@ -92,7 +94,7 @@ def ONNkomandoa(id_berogailu):
     egoeraEgokia = True
     if not id_berogailu:
         # Berogailu guztiak piztu: ez da parametrorik jaso
-        berogailuak.aldatuEgoeraGuztiei(True)
+        berogailuak.egoeraAldatuGuztiei(True)
     else:
         try:  # Jaso den parametroa zenbaki bat den frogatu (ID bat izango da eta)
             id_zenb = int(id_berogailu)
@@ -105,7 +107,7 @@ def ONNkomandoa(id_berogailu):
 
         if egoeraEgokia:
             unek = berogailuak.bilatuId(id_zenb)
-            if unek != None:
+            if unek is not None:
                 # ID- hori duen berogailua piztu
                 unek.egoeraAldatu(True)
             else:
@@ -147,7 +149,8 @@ def NAMkomandoa():
             bueltanBytes = bueltanBytes[
                            :MAX_BYTES_DATAGRAM]  # bytearrayko lehenengo MAX_BYTES_DATAGRAM elementuak lortu
             bueltan = bueltanBytes.decode("utf-8",
-                                          "ignore")  # saiatu zatituko mezua dekodetzen eta byte-ren bat ezin bada dekodetu (zatiketak karaktere baten definizioa zatitu du) byte hori ignoratu
+                                          "ignore")  # saiatu zatituko mezua dekodetzen eta byte-ren bat ezin bada
+            # dekodetu (zatiketak karaktere baten definizioa zatitu du) byte hori ignoratu
             bueltan = bueltan.rsplit(':', 1)[0]  # azkenengo ":" karakterearen ondoren dagoen informazioa baztertu
 
     else:
@@ -164,6 +167,8 @@ def SETkomandoa(param):
         egoeraEgokia = True
         try:
             tenp = int(tenp)
+            if tenp < 0:
+                raise ValueError()
         except ValueError:  # Hozberoa zenbaki osoa izan behar da
             return '-4'
         if not bg_id:
@@ -171,6 +176,8 @@ def SETkomandoa(param):
                 bg.setDesioTenp(tenp)
         else:
             bg = berogailuak.bilatuId(bg_id)
+            if not bg:
+                return '-16'
             bg.setDesioTenp(tenp)
         if not egoeraEgokia:
             return '-16'
@@ -200,9 +207,9 @@ while True:
     elif komandoa == "NAM":
         erantzuna = NAMkomandoa()
     elif komandoa == "NOW":
-		erantzuna = NOWGETkomandoa("NOW")
-	elif komandoa == "GET":
-		erantzuna = NOWGETkomandoa("GET")
+        erantzuna = NOWGETkomandoa("NOW")
+    elif komandoa == "GET":
+        erantzuna = NOWGETkomandoa("GET")
     elif komandoa == "SET":
         erantzuna = SETkomandoa(parametroak)
     else:
