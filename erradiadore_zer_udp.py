@@ -92,8 +92,7 @@ def OFFkomandoa(id_berogailu):
 
 
 def ONNkomandoa(id_berogailu):
-    errorekodea = 11
-    egoeraEgokia = True
+    errorekodea = 0  # 0 bada ez dago errorerik oraindik
     if not id_berogailu:
         # Berogailu guztiak piztu: ez da parametrorik jaso
         berogailuak.egoeraAldatuGuztiei(True)
@@ -101,13 +100,12 @@ def ONNkomandoa(id_berogailu):
         # Frogaketak:
         try:  # Jaso den parametroa zenbaki bat den frogatu (ID bat izango da eta)
             id_zenb = int(id_berogailu)
-            if egoeraEgokia and id_zenb < 0:  # Jasotako zenbakia ez da negatiboa
+            if id_zenb < 0:  # Jasotako zenbakia ez da negatiboa
                 raise ValueError()
         except ValueError:
             errorekodea = 4  # Formatu errorea: Jasotako parametroa ez da zenbaki bat edo zenbaki negatiboa da
-            egoeraEgokia = False
 
-        if egoeraEgokia:
+        if not errorekodea:
             unek = berogailuak.bilatuId(id_zenb)
             if unek is not None:
                 # ID- hori duen berogailua piztu
@@ -115,59 +113,66 @@ def ONNkomandoa(id_berogailu):
             else:
                 # Ezin da eragiketa burutu
                 errorekodea = 11  # Err ONN. Ez dago '{id_zenb}' ID-a duen berogailurik
-                egoeraEgokia = False
 
-    if egoeraEgokia:
+    if not errorekodea:
         bueltan = "+"
     else:
         bueltan = "-" + str(errorekodea)
     return bueltan
 
 
-def NAMkomandoa():
-    errorekodea = 13
-    egoeraegokia = True
+def NAMkomandoa(parametroak):
+    errorekodea = 0 # 0 bada ez dago errorerik oraindik
 
     # Berogailuen deskribapenak ("ID,izena" tuplak) gordeko diren array-a hasieratu
     berogdeskriblista = []
     # Berogailu bakoitza iteratzeko, berogailu listari iteradore bat eskatu eta aldagai batean gorde
     itrberogailu = berogailuak.getIteradorea()
-    try:
-        for ber in itrberogailu: # Berogailu bakoitzeko
-            # Uneko berogailuaren deskribapena lortzeko informazioa prestatu (ID eta Izena)
-            bID = ber.getID()
-            bIzena = ber.getIzena()
-            # Uneko berogailuaren deskribapena sortu (ID,Izena)
-            berDeskrib = str(bID) + "," + str(bIzena)
-            # Uneko berogailuaren deskribapena berogailu deskribapen listari gehitu
-            berogdeskriblista.append(berDeskrib)
-        # Berogailu deskribapen listako elmentu guztiak ":" karakterearekin konkatenatu
-        bueltan = ":".join(berogdeskriblista)
-    except Exception:
-        # Datuen bilketan edo prozezaketan errore bat egon bada, orduan egoera ez egokia dela adierazi
-        egoeraegokia = False
+    if not parametroak:
+        try:
+            for ber in itrberogailu: # Berogailu bakoitzeko
+                # Uneko berogailuaren deskribapena lortzeko informazioa prestatu (ID eta Izena)
+                bID = ber.getID()
+                bIzena = ber.getIzena()
+                # Uneko berogailuaren deskribapena sortu (ID,Izena)
+                berDeskrib = str(bID) + "," + str(bIzena)
+                # Uneko berogailuaren deskribapena berogailu deskribapen listari gehitu
+                berogdeskriblista.append(berDeskrib)
+            # Berogailu deskribapen listako elmentu guztiak ":" karakterearekin konkatenatu
+            bueltan = ":".join(berogdeskriblista)
+        except Exception:
+            # Datuen bilketan edo prozezaketan errore bat egon bada, orduan egoera ez egokia dela adierazi
+            errorekodea = 13
+    else:
+        errorekodea = 2 # NAM komandoak parametroak jaso ditu eta ez luke parametrorik jaso beharko.
 
-    if egoeraegokia:
+    if not errorekodea:
         # Bidaliko den mezua prestatu
         bueltan = "+" + bueltan
 
-        # Bidaliko den mezua luzeera maximoa gainditzen ez duela frogatu
-        if len(bueltan.encode()) > MAX_BYTES_DATAGRAM:
-            # DATAGRAMA BYTE LUZEERA MAXIMOA GAINDITU DA: {MAX_BYTES_DATAGRAM}
-            # Mezuaren luzeera txikituko da informazioa borratuz
-            bueltanBytes = bytearray(
-                bueltan.encode())  # byteko lehenengo MAX_BYTES_DATAGRAM kopurua lortzeko byte array bat sortu
-            bueltanBytes = bueltanBytes[
-                           :MAX_BYTES_DATAGRAM]  # bytearrayko lehenengo MAX_BYTES_DATAGRAM elementuak lortu
-            bueltan = bueltanBytes.decode("utf-8",
-                                          "ignore")  # saiatu zatituko mezua dekodetzen eta byte-ren bat ezin bada
-            # dekodetu (adb: zatiketak karaktere baten definizioa zatitu du) byte hori ignoratu
-            bueltan = bueltan.rsplit(':', 1)[0]  # azkenengo ":" karakterearen ondoren dagoen informazioa baztertu
+        # Bidaliko den mezua luzeera maximoa gainditzen ez duela frogatu eta gainditzen badu murriztu
+        bueltan = __zerrendaLuzeeraMaxEzGainditu(bueltan)
 
     else:
         # Egoera ez egokia: Errorea mezuaren exekuzioan gertatu da, errore mezua prestatu
         bueltan = "-" + str(errorekodea)
     return bueltan
+
+def __zerrendaLuzeeraMaxEzGainditu(zerrenda):
+    bueltaZerrenda = zerrenda
+    # Bidaliko den mezua luzeera maximoa gainditzen ez duela frogatu eta gainditzen badu murriztu
+    if len(bueltaZerrenda.encode()) > MAX_BYTES_DATAGRAM:
+        # DATAGRAMA BYTE LUZEERA MAXIMOA GAINDITU DA: {MAX_BYTES_DATAGRAM}
+        # Mezuaren luzeera txikituko da informazioa borratuz
+        bueltanBytes = bytearray(
+            bueltaZerrenda.encode())  # byteko lehenengo MAX_BYTES_DATAGRAM kopurua lortzeko byte array bat sortu
+        bueltanBytes = bueltanBytes[
+                       :MAX_BYTES_DATAGRAM]  # bytearrayko lehenengo MAX_BYTES_DATAGRAM elementuak lortu
+        bueltaZerrenda = bueltanBytes.decode("utf-8",
+                                      "ignore")  # saiatu zatituko mezua dekodetzen eta byte-ren bat ezin bada
+        # dekodetu (adb: zatiketak karaktere baten definizioa zatitu du) byte hori ignoratu
+        bueltaZerrenda = bueltaZerrenda.rsplit(':', 1)[0]  # azkenengo ":" karakterearen ondoren dagoen informazioa baztertu
+    return bueltaZerrenda
 
 
 def SETkomandoa(param):
@@ -218,7 +223,7 @@ while True:
     elif komandoa == "OFF":
         erantzuna = OFFkomandoa(parametroak).encode("ascii")
     elif komandoa == "NAM":
-        erantzuna = NAMkomandoa().encode("utf-8")
+        erantzuna = NAMkomandoa(parametroak).encode("utf-8")
     elif komandoa == "NOW":
         erantzuna = NOWGETkomandoa("NOW").encode("ascii")
     elif komandoa == "GET":
