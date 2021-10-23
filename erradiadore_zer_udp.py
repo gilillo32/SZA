@@ -46,7 +46,11 @@ def NOWGETkomandoa(aukera):
             # parametroa id-a dago
             berogailua = berogailuak.bilatuId(int(parametroak))
             if berogailua is None:  # id hori duen berogailurik ez da existitzen
-                ema = '-14'  # errorea 14 izango da
+                if aukera == "NOW":
+                    ema = '-14'  # errorea 14 izango da
+                elif aukera == "GET":
+                    ema = '-15'  # errorea 15 izango da
+
             else:  # existitzen da
                 tenperatura = 0
                 if aukera == "NOW":  # uneko hozberoa nahi dugu
@@ -96,10 +100,10 @@ def ONNkomandoa(id_berogailu):
     else:
         try:  # Jaso den parametroa zenbaki bat den frogatu (ID bat izango da eta)
             id_zenb = int(id_berogailu)
-            if egoeraEgokia and id_zenb < 0:  # Jasotako zenbakia ez da negatiboa ezta 0
+            if egoeraEgokia and id_zenb < 0:  # Jasotako zenbakia ez da negatiboa
                 raise ValueError()
         except ValueError:
-            errorekodea = 4  # Formatu errorea: Jasotako parametroa ez da zenbaki bat
+            errorekodea = 4  # Formatu errorea: Jasotako parametroa ez da zenbaki bat edo zenbaki negatiboa da
             egoeraEgokia = False
 
         if egoeraEgokia:
@@ -140,14 +144,14 @@ def NAMkomandoa():
 
         if len(bueltan.encode()) > MAX_BYTES_DATAGRAM:
             # DATAGRAMA BYTE LUZEERA MAXIMOA GAINDITU DA: {MAX_BYTES_DATAGRAM}
-            # Mezuaren luzeera txikituko da inofrmazioa borratuz
+            # Mezuaren luzeera txikituko da informazioa borratuz
             bueltanBytes = bytearray(
                 bueltan.encode())  # byteko lehenengo MAX_BYTES_DATAGRAM kopurua lortzeko byte array bat sortu
             bueltanBytes = bueltanBytes[
                            :MAX_BYTES_DATAGRAM]  # bytearrayko lehenengo MAX_BYTES_DATAGRAM elementuak lortu
             bueltan = bueltanBytes.decode("utf-8",
                                           "ignore")  # saiatu zatituko mezua dekodetzen eta byte-ren bat ezin bada
-            # dekodetu (zatiketak karaktere baten definizioa zatitu du) byte hori ignoratu
+            # dekodetu (adb: zatiketak karaktere baten definizioa zatitu du) byte hori ignoratu
             bueltan = bueltan.rsplit(':', 1)[0]  # azkenengo ":" karakterearen ondoren dagoen informazioa baztertu
 
     else:
@@ -187,33 +191,32 @@ s.bind(('', PORT))
 while True:
     # Jaso mezu bat eta erantzun datu berdinekin.
     mezua, bez_helb = s.recvfrom(1024)
-    mezua = mezua.decode()
+    # Jasotako mezua ASCII formatuan dekodetu
+    mezua = mezua.decode("ascii")
     # komandoak 3 parametro izango dituzte
     komandoa = mezua[:3]
-    print(komandoa)
-    # parametroak(izatekotan) komandoen atzetik doaz
+    # parametroak (izatekotan) komandoen atzetik doaz
     parametroak = mezua[3:]
-    print(parametroak)
+    # Erantzuna hasieratu
     erantzuna = ''
 
     # sartutako komando bakoitzeko kasu bat
     if komandoa == "ONN":
-        erantzuna = ONNkomandoa(parametroak)
+        erantzuna = ONNkomandoa(parametroak).encode("ascii")
     elif komandoa == "OFF":
-        erantzuna = OFFkomandoa(parametroak)
+        erantzuna = OFFkomandoa(parametroak).encode("ascii")
     elif komandoa == "NAM":
-        erantzuna = NAMkomandoa()
+        erantzuna = NAMkomandoa().encode("utf-8")
     elif komandoa == "NOW":
-        erantzuna = NOWGETkomandoa("NOW")
+        erantzuna = NOWGETkomandoa("NOW").encode("ascii")
     elif komandoa == "GET":
-        erantzuna = NOWGETkomandoa("GET")
+        erantzuna = NOWGETkomandoa("GET").encode("ascii")
     elif komandoa == "SET":
-        erantzuna = SETkomandoa(parametroak)
+        erantzuna = SETkomandoa(parametroak).encode("ascii")
     else:
         # komando ezezaguna
-        erantzuna = "-1"  # errorea
+        erantzuna = "-1".encode("ascii")  # errorea
 
-    print(erantzuna)
-    s.sendto(erantzuna.encode(), bez_helb)
+    s.sendto(erantzuna, bez_helb)
 # noinspection PyUnreachableCode
 s.close()
