@@ -79,7 +79,7 @@ def OFFkomandoa(id_berogailu):
             if bg.getEgoera():
                 bg.egoeraAldatu(False)
     else:
-        berogailua = berogailuak.bilatuId(id_berogailu)
+        berogailua = berogailuak.bilatuId(int(id_berogailu))
         if berogailua is None:
             bueltan = '-12'
         else:
