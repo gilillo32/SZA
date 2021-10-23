@@ -73,8 +73,6 @@ def NOWGETkomandoa(aukera):
 
 
 def OFFkomandoa(id_berogailu):
-    berogailua = berogailuak.bilatuId(id_berogailu)
-    berogailua.egoeraAldatu(False)
     bueltan = '+'
     if not id_berogailu:
         for bg in berogailuak.getIteradorea():
