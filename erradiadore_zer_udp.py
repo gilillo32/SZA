@@ -98,6 +98,7 @@ def ONNkomandoa(id_berogailu):
         # Berogailu guztiak piztu: ez da parametrorik jaso
         berogailuak.egoeraAldatuGuztiei(True)
     else:
+        # Frogaketak:
         try:  # Jaso den parametroa zenbaki bat den frogatu (ID bat izango da eta)
             id_zenb = int(id_berogailu)
             if egoeraEgokia and id_zenb < 0:  # Jasotako zenbakia ez da negatiboa
@@ -127,21 +128,30 @@ def NAMkomandoa():
     errorekodea = 13
     egoeraegokia = True
 
+    # Berogailuen deskribapenak ("ID,izena" tuplak) gordeko diren array-a hasieratu
     berogdeskriblista = []
+    # Berogailu bakoitza iteratzeko, berogailu listari iteradore bat eskatu eta aldagai batean gorde
     itrberogailu = berogailuak.getIteradorea()
     try:
-        for ber in itrberogailu:
-            bIzena = ber.getIzena()
+        for ber in itrberogailu: # Berogailu bakoitzeko
+            # Uneko berogailuaren deskribapena lortzeko informazioa prestatu (ID eta Izena)
             bID = ber.getID()
+            bIzena = ber.getIzena()
+            # Uneko berogailuaren deskribapena sortu (ID,Izena)
             berDeskrib = str(bID) + "," + str(bIzena)
+            # Uneko berogailuaren deskribapena berogailu deskribapen listari gehitu
             berogdeskriblista.append(berDeskrib)
+        # Berogailu deskribapen listako elmentu guztiak ":" karakterearekin konkatenatu
         bueltan = ":".join(berogdeskriblista)
     except Exception:
+        # Datuen bilketan edo prozezaketan errore bat egon bada, orduan egoera ez egokia dela adierazi
         egoeraegokia = False
 
     if egoeraegokia:
+        # Bidaliko den mezua prestatu
         bueltan = "+" + bueltan
 
+        # Bidaliko den mezua luzeera maximoa gainditzen ez duela frogatu
         if len(bueltan.encode()) > MAX_BYTES_DATAGRAM:
             # DATAGRAMA BYTE LUZEERA MAXIMOA GAINDITU DA: {MAX_BYTES_DATAGRAM}
             # Mezuaren luzeera txikituko da informazioa borratuz
@@ -155,6 +165,7 @@ def NAMkomandoa():
             bueltan = bueltan.rsplit(':', 1)[0]  # azkenengo ":" karakterearen ondoren dagoen informazioa baztertu
 
     else:
+        # Egoera ez egokia: Errorea mezuaren exekuzioan gertatu da, errore mezua prestatu
         bueltan = "-" + str(errorekodea)
     return bueltan
 
@@ -182,6 +193,7 @@ def SETkomandoa(param):
             bg.setDesioTenp(tenp)
         if not egoeraEgokia:
             return '-16'
+
 
 
 # Sortu socketa eta esleitu helbide bat.
