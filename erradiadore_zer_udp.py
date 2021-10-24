@@ -100,14 +100,12 @@ def ONNkomandoa(id_berogailu):
 
 def __berogailuEgoeraAldatu(id_berogailu, egoera):
     if not id_berogailu:
-        # Berogailu guztiak piztu: ez da parametrorik jaso
+        # Berogailu guztiei egoera aldatu: ez da parametrorik jaso
         berogailuak.egoeraAldatuGuztiei(egoera)
     else:
         # Frogaketak:
         try:  # Jaso den parametroa zenbaki bat den frogatu (ID bat izango da eta)
-            id_zenb = int(id_berogailu)
-            if id_zenb < 0:  # Jasotako zenbakia ez da negatiboa
-                raise ValueError()
+            id_zenb = __toIntEtaPositiboa(id_berogailu)
         except ValueError:
             raise ErrParamFormatuEzEgoki()  # Formatu errorea: Jasotako parametroa ez da zenbaki bat edo zenbaki negatiboa da
 
@@ -175,26 +173,41 @@ def __zerrendaLuzeeraMaxEzGainditu(zerrenda):
 def SETkomandoa(param):
     if not param:
         raise ErrHautaParamFalta()
+
+    tenp = param[:3]
+    try:
+        tenp = __toIntEtaPositiboa(tenp)
+        tenp = tenp / 10
+    except ValueError:  # Hozberoa zenbaki osoa izan behar da
+        raise ErrParamFormatuEzEgoki()
+
+    bg_id = param[4:]
+    if not bg_id:
+        for bg in berogailuak.getIteradorea():
+            bg.setDesioTenp(tenp)
     else:
-        tenp = param[:3]
-        bg_id = param[3:]
-        egoeraEgokia = True
         try:
-            tenp = int(tenp)
-            if tenp < 0:
-                raise ValueError()
+            bg_id = __toIntEtaPositiboa(bg_id)
         except ValueError:  # Hozberoa zenbaki osoa izan behar da
             raise ErrParamFormatuEzEgoki()
-        if not bg_id:
-            for bg in berogailuak.getIteradorea():
-                bg.setDesioTenp(tenp)
-        else:
-            bg = berogailuak.bilatuId(bg_id)
-            if not bg:
-                raise ErroreaEskaeran(16)
-            bg.setDesioTenp(tenp)
-        if not egoeraEgokia:
+
+        bg = berogailuak.bilatuId(bg_id)
+        if not bg:
             raise ErroreaEskaeran(16)
+        bg.setDesioTenp(tenp)
+
+    return "+"
+
+"""
+sartutako balioa zenbaki positiboa den ala ez frogatzen du.
+Baldintzak betetzen baditu, zenbakia bueltatzen du int formatuan.
+Baldintzak betetzen ez baditu, orduan ValueError salbuespena jaurtiko du
+"""
+def __toIntEtaPositiboa(balioa):
+    ema = int(balioa)
+    if ema < 0:
+        raise ValueError()
+    return ema
 
 
 def main():
@@ -230,7 +243,7 @@ def main():
             else:
                 raise ErrKomandoEzezaguna() # komando ezezaguna
         except ErroreaEskaeran as errEsk:
-            erantzuna = "-" + errEsk.get_errore_kode()
+            erantzuna = "-" + str(errEsk.get_errore_kode())
             erantzuna = erantzuna.encode("ascii")
 
         s.sendto(erantzuna, bez_helb)

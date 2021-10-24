@@ -9,7 +9,7 @@ class ErroreaEskaeran(Exception):
         return self.errore_kodea
 
     def __repr__(self):
-        mezua = "Err " + self.get_errore_kode()
+        mezua = "Err " + str(self.get_errore_kode())
         if self.errore_mezua:
             mezua += ": " + self.errore_mezua
         return mezua
