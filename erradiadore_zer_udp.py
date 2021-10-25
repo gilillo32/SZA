@@ -6,8 +6,8 @@ from zerbitzari_errore import ErroreaEskaeran, ErrParamFormatuEzEgoki, ErrEzEspe
 
 PORT = 50001
 MAX_BYTES_DATAGRAM = 1500
-
 berogailuak = BerogailuLista.BerogailuLista()
+
 
 def NOWGETkomandoa(aukera, parametroak):
     """
@@ -85,7 +85,7 @@ def OFFkomandoa(id_berogailu):
     try:
         bueltan = __berogailuEgoeraAldatu(id_berogailu, False)
     except ErroreaEskaeran:
-        raise ErroreaEskaeran(12) # Err OFF. Ez dago ID hori duen berogailurik
+        raise ErroreaEskaeran(12)  # Err OFF. Ez dago ID hori duen berogailurik
 
     return bueltan
 
@@ -94,9 +94,10 @@ def ONNkomandoa(id_berogailu):
     try:
         bueltan = __berogailuEgoeraAldatu(id_berogailu, True)
     except ErroreaEskaeran:
-        raise ErroreaEskaeran(11) # Err ONN. Ez dago ID hori duen berogailurik
+        raise ErroreaEskaeran(11)  # Err ONN. Ez dago ID hori duen berogailurik
 
     return bueltan
+
 
 def __berogailuEgoeraAldatu(id_berogailu, egoera):
     if not id_berogailu:
@@ -121,7 +122,6 @@ def __berogailuEgoeraAldatu(id_berogailu, egoera):
     return bueltan
 
 
-
 def NAMkomandoa(parametroak):
     # Berogailuen deskribapenak ("ID,izena" tuplak) gordeko diren array-a hasieratu
     berogdeskriblista = []
@@ -129,7 +129,7 @@ def NAMkomandoa(parametroak):
     itrberogailu = berogailuak.getIteradorea()
     if not parametroak:
         try:
-            for ber in itrberogailu: # Berogailu bakoitzeko
+            for ber in itrberogailu:  # Berogailu bakoitzeko
                 # Uneko berogailuaren deskribapena lortzeko informazioa prestatu (ID eta Izena)
                 bID = ber.getID()
                 bIzena = ber.getIzena()
@@ -143,15 +143,14 @@ def NAMkomandoa(parametroak):
             # Datuen bilketan edo prozezaketan errore bat egon bada, orduan egoera ez egokia dela adierazi
             raise ErroreaEskaeran(13)
     else:
-        raise ErrEzEsperoParam() # NAM komandoak parametroak jaso ditu eta ez luke parametrorik jaso beharko.
-
+        raise ErrEzEsperoParam()  # NAM komandoak parametroak jaso ditu eta ez luke parametrorik jaso beharko.
 
     bueltan = "+" + bueltan
     # Bidaliko den mezua luzeera maximoa gainditzen ez duela frogatu eta gainditzen badu murriztu
     bueltan = __zerrendaLuzeeraMaxEzGainditu(bueltan)
 
-
     return bueltan
+
 
 def __zerrendaLuzeeraMaxEzGainditu(zerrenda):
     bueltaZerrenda = zerrenda
@@ -164,9 +163,10 @@ def __zerrendaLuzeeraMaxEzGainditu(zerrenda):
         bueltanBytes = bueltanBytes[
                        :MAX_BYTES_DATAGRAM]  # bytearrayko lehenengo MAX_BYTES_DATAGRAM elementuak lortu
         bueltaZerrenda = bueltanBytes.decode("utf-8",
-                                      "ignore")  # saiatu zatituko mezua dekodetzen eta byte-ren bat ezin bada
+                                             "ignore")  # saiatu zatituko mezua dekodetzen eta byte-ren bat ezin bada
         # dekodetu (adb: zatiketak karaktere baten definizioa zatitu du) byte hori ignoratu
-        bueltaZerrenda = bueltaZerrenda.rsplit(':', 1)[0]  # azkenengo ":" karakterearen ondoren dagoen informazioa baztertu
+        bueltaZerrenda = bueltaZerrenda.rsplit(':', 1)[
+            0]  # azkenengo ":" karakterearen ondoren dagoen informazioa baztertu
     return bueltaZerrenda
 
 
@@ -198,11 +198,14 @@ def SETkomandoa(param):
 
     return "+"
 
+
 """
 sartutako balioa zenbaki positiboa den ala ez frogatzen du.
 Baldintzak betetzen baditu, zenbakia bueltatzen du int formatuan.
 Baldintzak betetzen ez baditu, orduan ValueError salbuespena jaurtiko du
 """
+
+
 def __toIntEtaPositiboa(balioa):
     ema = int(balioa)
     if ema < 0:
@@ -212,6 +215,7 @@ def __toIntEtaPositiboa(balioa):
 
 def main():
     # Sortu socketa eta esleitu helbide bat.
+    global berogailuak, listaBK
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.bind(('', PORT))
 
@@ -227,6 +231,7 @@ def main():
         # Erantzuna hasieratu
         erantzuna = ''
         try:
+            listaBK = berogailuak.copy()
             # sartutako komando bakoitzeko kasu bat
             if komandoa == "ONN":
                 erantzuna = ONNkomandoa(parametroak).encode("ascii")
@@ -241,14 +246,15 @@ def main():
             elif komandoa == "SET":
                 erantzuna = SETkomandoa(parametroak).encode("ascii")
             else:
-                raise ErrKomandoEzezaguna() # komando ezezaguna
+                raise ErrKomandoEzezaguna()  # komando ezezaguna
         except ErroreaEskaeran as errEsk:
             erantzuna = "-" + str(errEsk.get_errore_kode())
             erantzuna = erantzuna.encode("ascii")
-
+            berogailuak = listaBK
         s.sendto(erantzuna, bez_helb)
     # noinspection PyUnreachableCode
     s.close()
+
 
 # Programa hau explizituki exekutatzen bada, hau da, ez da inportatzen adibidez:
 if __name__ == '__main__':
