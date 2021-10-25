@@ -16,7 +16,6 @@ def NOWGETkomandoa(aukera, parametroak):
     egiten du eta besteak desio tenperaturarekin. Beraz, metodo orokor bat egingo dugu
     zeinak sartzen duzun aukeraren(NOW edo GET) arabera desio edo uneko tenperatura
     itzultzen duen.
-    :param parametroak:
     """
     if not parametroak:
         ema = __NOWGETkomandoaParamEz(aukera)
