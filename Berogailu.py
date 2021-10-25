@@ -2,6 +2,9 @@
 
 import types
 
+import Berogailu
+
+
 class Berogailua:
   
   def __init__(self, id, izena, uneko_tenp = 0.0, desio_tenp = 0.0, piztuta = False):
@@ -43,8 +46,9 @@ class Berogailua:
     self.tenpLortu()
 
   def tenpLortu(self):
-    print("\nDesio den hozberora iristen...\n")
     self.__uneko_tenp = self.__desio_tenp
-    print("\nDesio zen hozberora iritsi da\n")
 
-
+  def copy(self):
+    berogailuBerria = Berogailu.Berogailua(self.__id, self.__izena, self.__uneko_tenp,
+                                           self.__desio_tenp, self.__piztuta)
+    return berogailuBerria

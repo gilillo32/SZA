@@ -7,6 +7,7 @@ from zerbitzari_errore import ErroreaEskaeran, ErrParamFormatuEzEgoki, ErrEzEspe
 PORT = 50001
 MAX_BYTES_DATAGRAM = 1500
 berogailuak = BerogailuLista.BerogailuLista()
+berogailuak.hasieratuBerogailuak()
 
 
 def NOWGETkomandoa(aukera, parametroak):
@@ -231,6 +232,7 @@ def main():
         # Erantzuna hasieratu
         erantzuna = ''
         try:
+            # Berogailuen egoeren kopia bat egiten da erroreren bat gertatuzgero aurreko egoerara bueltatu ahal izateko
             listaBK = berogailuak.copy()
             # sartutako komando bakoitzeko kasu bat
             if komandoa == "ONN":
@@ -250,6 +252,7 @@ def main():
         except ErroreaEskaeran as errEsk:
             erantzuna = "-" + str(errEsk.get_errore_kode())
             erantzuna = erantzuna.encode("ascii")
+            # Errore bat gertatu da, berogailuen aurreko egoerara bueltatu
             berogailuak = listaBK
         s.sendto(erantzuna, bez_helb)
     # noinspection PyUnreachableCode

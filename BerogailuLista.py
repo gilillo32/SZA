@@ -7,7 +7,6 @@ class BerogailuLista(object):
 
     def __init__(self):
         self.lista = []
-        self.hasieratuBerogailuak()
 
     def bilatuId(self, id):
         for i in self.lista:
@@ -31,3 +30,12 @@ class BerogailuLista(object):
             piztuta = random.choice([True, False])
             berog = Berogailu.Berogailua(random.randint(0, 100000), f"Gela {i}", unekoTenp, desioTenp, piztuta)
             self.lista.append(berog)
+
+    def addBerogailua(self, berogailua):
+        self.lista.append(berogailua)
+
+    def copy(self):
+        berogailuListaBerria = BerogailuLista()
+        for berog in self.lista:
+            berogailuListaBerria.addBerogailua(berog.copy())
+        return berogailuListaBerria
