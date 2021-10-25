@@ -28,7 +28,7 @@ class BerogailuLista(object):
             unekoTenp = round(random.uniform(0.0, 30.0), 1)
             desioTenp = round(random.uniform(0.0, 30.0), 1)
             piztuta = random.choice([True, False])
-            berog = Berogailu.Berogailua(random.randint(0, 100000), f"Gela {i}", unekoTenp, desioTenp, piztuta)
+            berog = Berogailu.Berogailua(i, f"Gela {i}", unekoTenp, desioTenp, piztuta)
             self.lista.append(berog)
 
     def addBerogailua(self, berogailua):
